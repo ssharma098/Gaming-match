@@ -1,0 +1,64 @@
+-- gamerschema.sql
+PRAGMA foreign_keys = ON;
+
+-- Users (basic profile)
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  display_name TEXT,
+  email TEXT UNIQUE,
+  password_hash TEXT,      -- store hashed passwords (bcrypt) in real app
+  birthdate TEXT,          -- ISO YYYY-MM-DD
+  gender TEXT,
+  bio TEXT,
+  city TEXT,
+  country TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Games master list
+CREATE TABLE games (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE
+);
+
+-- Many-to-many: user plays / likes games
+CREATE TABLE user_games (
+  user_id INTEGER NOT NULL,
+  game_id INTEGER NOT NULL,
+  skill_level TEXT,        -- e.g. "beginner", "intermediate", "pro"
+  PRIMARY KEY (user_id, game_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+);
+
+-- Preferences: who they want to be matched with
+CREATE TABLE preferences (
+  user_id INTEGER PRIMARY KEY,
+  preferred_gender TEXT,   -- NULL means any
+  min_age INTEGER,
+  max_age INTEGER,
+  max_distance_km INTEGER, -- for location-based matching (optional)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Likes / matches (for tracking interactions)
+CREATE TABLE likes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  from_user INTEGER NOT NULL,
+  to_user INTEGER NOT NULL,
+  created_at TEXT DEFAULT (datetime('now')),
+  UNIQUE(from_user, to_user),
+  FOREIGN KEY (from_user) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (to_user) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Optional: photos table (store urls)
+CREATE TABLE photos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  url TEXT NOT NULL,
+  caption TEXT,
+  is_profile BOOLEAN DEFAULT 0,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

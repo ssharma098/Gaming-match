@@ -1,0 +1,8 @@
+SELECT u.id, u.username, u.display_name, COUNT(*) AS shared_games
+FROM users u
+JOIN user_games ug ON u.id = ug.user_id
+WHERE ug.game_id IN (
+    SELECT game_id FROM user_games WHERE user_id = :user_id
+) AND u.id <> :user_id
+GROUP BY u.id
+ORDER BY shared_games DESC, u.created_at DESC;
