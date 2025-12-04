@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "userId": "U448125",
+      "username": "john",
+      "password": "D8BJmr",
+      "age": 22,
+      "hobbies": [
+        "music",
+        "games"
+      ],
+      "city": "London",
+      "level": 1,
+      "coins": 0
+    }
+  ]
+}
